@@ -21,7 +21,7 @@
                   <s v-if="task.status=='Completed'">{{ task.created_at }}</s>
                   <div v-if="task.status=='Pending'">{{ task.created_at }}</div>
                 </td>
-                <td><input type="checkbox" v-model="task.completed" @change="onChangeProcessed($event, task, index)"></td>
+                <td><input type="checkbox" v-model="task.completed" @click="completedTask($event, task, index)" ></td>
                 <td>
                     <b-button variant="outline-secondary" class="mr-2" @click="edit(index)"> Edit </b-button>
                     <b-button variant="outline-danger" class="mr-2" @click="remove(task, index)"> Remove </b-button>
@@ -69,7 +69,6 @@
       created() {
         /** create new task and store to local storage  */
         this.tasks = (localStorage.getItem("tasks")) ? JSON.parse(localStorage.getItem("tasks")) : [];
-        console.log(this.tasks)
       },
 
       methods: {
@@ -94,46 +93,18 @@
           this.hideModal();
         },
 
-        completedTask(task, index) {
-          console.log(task)
-          console.log(index)
-
+        completedTask(event, task, index) {
           /** get tasklist */
           let tasks = JSON.parse(localStorage.getItem("tasks"));
 
-          console.log(tasks[index])
+          tasks[index]['completed'] = (event.target.checked == true) ? true : false;
+          tasks[index]['status'] = (event.target.checked == true) ? 'Completed' : 'Pending';
 
-          tasks[index]['completed'] = tasks[index]['status'] == 'Completed' ? true : false;
-          tasks[index]['status'] = tasks[index]['status'] == 'Completed' ? 'Completed' : 'Pending';
           localStorage.setItem("tasks", JSON.stringify(tasks));
+          this.tasks = (localStorage.getItem("tasks")) ? JSON.parse(localStorage.getItem("tasks")) : [];
+
           this.showToast("success", "Success!", "Task List updated success!");
         },
-
-        onChangeProcessed(event, task, index) {
-          let tasks = JSON.parse(localStorage.getItem("tasks"));
-
-           if (event.target.checked == true) {
-              console.log(event);
-              console.log("ACTIVE");
-              console.log(event.target.checked);
-              console.log(task);
-              tasks[index]['completed'] = true;
-              tasks[index]['status'] = 'Completed';
-            };
-          if (event.target.checked == false ) {
-              console.log(event);
-              console.log("OFF");
-              console.log(event.target.checked);
-              console.log(task);
-
-              tasks[index]['completed'] = false;
-              tasks[index]['status'] = 'Pending';
-            }
-            localStorage.setItem("tasks", JSON.stringify(tasks));
-
-            this.showToast("success", "Success!", "Task List updated success!");
-        },
-
       }
     }
     </script>
