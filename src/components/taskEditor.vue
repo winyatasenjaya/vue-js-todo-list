@@ -12,9 +12,15 @@
         </thead>
         <tbody>
             <tr v-for="(task, index) in tasks" :key="index">
-                <td>{{ task.subject }}</td>
+                <td>
+                  <s v-if="task.status=='Completed'">{{ task.subject }}</s>
+                  <div v-if="task.status=='Pending'">{{ task.subject }}</div>
+                </td>
                 <td>{{ task.status }}</td>
-                <td>{{ task.created_at }}</td>
+                <td>
+                  <s v-if="task.status=='Completed'">{{ task.created_at }}</s>
+                  <div v-if="task.status=='Pending'">{{ task.created_at }}</div>
+                </td>
                 <td><input type="checkbox" v-model="task.completed" @change="onChangeProcessed($event, task, index)"></td>
                 <td>
                     <b-button variant="outline-secondary" class="mr-2" @click="edit(index)"> Edit </b-button>
