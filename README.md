@@ -6,7 +6,7 @@ This Project is about a CRUD ToDo list made in vue.js
 ## Preview Link
 http://localhost:8080/
 
-## Project setup
+## How to install the Project?
 ```
 npm install
 ```

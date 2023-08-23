@@ -3,7 +3,7 @@
       <table class="table table-striped table-responsive">
         <thead>
             <tr>
-                <th scope="col">Task Title</th>
+                <th scope="col">Subject Task</th>
                 <th>Status</th>
                 <th>Created At</th>
                 <th scope="col">Completed</th>
@@ -15,7 +15,7 @@
                 <td>{{ task.subject }}</td>
                 <td>{{ task.status }}</td>
                 <td>{{ task.created_at }}</td>
-                <td><input type="checkbox" v-model="task.completed"></td>
+                <td><input type="checkbox" v-model="task.completed" @change="onChangeProcessed($event, task, index)"></td>
                 <td>
                     <b-button variant="outline-secondary" class="mr-2" @click="edit(index)"> Edit </b-button>
                     <b-button variant="outline-danger" class="mr-2" @click="remove(task, index)"> Remove </b-button>
@@ -24,7 +24,18 @@
         </tbody>
       </table>
 
+      <b-modal ref="modalRemove" hide-footer title="Confirmation">
+        <div class="d-block text-center">
+          <p>Are you sure?</p>
+          <p>Task: {{ taskSelected.subject }}</p>
+        </div>
+        <div class="mt-3 d-flex justify-content-end">
+          <b-button variant="outline-secondary" class="mr-2" @click="hideModal"> Cancel </b-button>
+          <b-button variant="outline-danger" class="mr-2" @click="confirmRemoveTask"> Remove </b-button>
+        </div>
+      </b-modal>
     </div>
+
     <div class="container mt-2 alinhar" v-else>
       <b-card class="mb-2" id="card_info">
         <b-card-text>You dont have any Task.</b-card-text>
@@ -35,8 +46,12 @@
 </template>
 
     <script>
+
+    import ToastMixin from "@/mixins/toastMixin.js";
+
     export default {
       name: "List",
+      mixins: [ToastMixin],
 
       data() {
         return {
@@ -57,6 +72,7 @@
         },
 
         remove(task, index) {
+          /** remove task from list */
           this.taskSelected = task;
           this.taskSelected.index = index;
           this.$refs.modalRemove.show();
@@ -70,7 +86,48 @@
           this.tasks.splice(this.taskSelected.index, 1);
           localStorage.setItem("tasks", JSON.stringify(this.tasks));
           this.hideModal();
-        }
+        },
+
+        completedTask(task, index) {
+          console.log(task)
+          console.log(index)
+
+          /** get tasklist */
+          let tasks = JSON.parse(localStorage.getItem("tasks"));
+
+          console.log(tasks[index])
+
+          tasks[index]['completed'] = tasks[index]['status'] == 'Completed' ? true : false;
+          tasks[index]['status'] = tasks[index]['status'] == 'Completed' ? 'Completed' : 'Pending';
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+          this.showToast("success", "Success!", "Task List updated success!");
+        },
+
+        onChangeProcessed(event, task, index) {
+          let tasks = JSON.parse(localStorage.getItem("tasks"));
+
+           if (event.target.checked == true) {
+              console.log(event);
+              console.log("ACTIVE");
+              console.log(event.target.checked);
+              console.log(task);
+              tasks[index]['completed'] = true;
+              tasks[index]['status'] = 'Completed';
+            };
+          if (event.target.checked == false ) {
+              console.log(event);
+              console.log("OFF");
+              console.log(event.target.checked);
+              console.log(task);
+
+              tasks[index]['completed'] = false;
+              tasks[index]['status'] = 'Pending';
+            }
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+
+            this.showToast("success", "Success!", "Task List updated success!");
+        },
+
       }
     }
     </script>

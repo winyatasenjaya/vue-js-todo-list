@@ -54,6 +54,7 @@ export default {
         subject: "",
         created_at: new Date().toLocaleString(),
         status: "",
+        completed: false,
         description: ""
       },
       methodSave: "new"
@@ -70,6 +71,11 @@ export default {
 
   methods: {
     saveTask() {
+      console.log('save task ')
+      console.log(this.formAddTask)
+
+      this.formAddTask.completed = this.formAddTask.status == 'Completed' ? true : false;
+
       if(this.methodSave === "update"){
         /** update task list */
         let tasks = JSON.parse(localStorage.getItem("tasks"));
@@ -79,12 +85,16 @@ export default {
         this.$router.push({ name: "list" });
         return;
       }
-
+      /** Load task list data */
       let tasks = (localStorage.getItem("tasks")) ? JSON.parse(localStorage.getItem("tasks")) : [];
+
+      /** prepare save data */
       this.formAddTask.created_at = new Date().toLocaleString();
       tasks.push(this.formAddTask);
+
+      /** store data to local storage */
       localStorage.setItem("tasks", JSON.stringify(tasks));
-      this.showToast("success", "Sucesso!", "Task LIst create Success!");
+      this.showToast("success", "Success!", "Task List create Success!");
       this.$router.push({ name: "list" });
     }
   }
